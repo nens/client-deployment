@@ -1,0 +1,71 @@
+- hosts: all
+  gather_facts: no
+  sudo: yes
+
+  tasks:
+  # DEPLOY TO INTEGRATION
+
+  - name: git checkout client
+    sudo_user: "{{ build_user }}"
+    git: repo=ssh://git@github.com/nens/lizard-client.git
+         dest={{ project_path }}/src/lizard-client
+         version={{ version }}
+    when: deploy_type == 'integration'
+
+  # npm
+  - name: npm install --force client
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    command: npm install --force chdir={{ project_path }}/src/lizard-client
+    when: deploy_type == 'integration'
+
+  # bower
+  - name: bower install
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    command: bower install chdir={{ project_path }}/src/lizard-client
+    when: deploy_type == 'integration'
+
+  - name: build javascript dist
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    command: grunt chdir={{ project_path }}/src/lizard-client
+    when: deploy_type == 'integration'
+
+  # // DEPLOY TO INTEGRATION
+
+  # DEPLOY TO STAGING AND PRODUCTION
+
+  # checkout new version of client
+  - name: download release
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    get_url: url=https://github.com/nens/{{ repo_name }}/releases/download/{{ version }}/{{ version }}.zip dest=/tmp/{{ version }}.zip
+    when: deploy_type != 'integration'
+
+  - name: rm old frontend
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    file: path={{ deploy_path }} state=absent
+    when: deploy_type != 'integration'
+
+  - name: mkdir
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    file: path={{ deploy_path }} state=directory owner={{ build_user }}
+    when: deploy_type != 'integration'
+
+  - name: unzip release
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    # unarchive: src=/tmp/{{ version}}.zip dest=/var/www/frontend
+    command: unzip /tmp/{{ version }}.zip -d {{ deploy_path }}
+    when: deploy_type != 'integration'
+
+  - name: rm tmp zip
+    sudo: yes
+    sudo_user: "{{ build_user }}"
+    file: path=/tmp/{{ version}}.zip state=absent
+    when: deploy_type != 'integration'
+
+  # // DEPLOY TO STAGING AND PRODUCTION
