@@ -1,4 +1,0 @@
-build_user: buildout
-
-version: 4.1.15
-repo_name: lizard-client

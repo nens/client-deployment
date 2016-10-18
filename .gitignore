@@ -8,3 +8,4 @@ integration
 webservers
 local
 production
+group_vars/all
