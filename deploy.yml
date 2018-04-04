@@ -7,7 +7,7 @@
   - name: download release
     sudo: yes
     sudo_user: "{{ build_user }}"
-    get_url: url=https://github.com/nens/{{ repo_name }}/releases/download/{{ version }}/{{ version }}.zip dest=/tmp/{{ version }}.zip
+    get_url: url=https://github.com/nens/{{ repo_name }}/releases/download/{{ version }}/lizard-management-client.zip dest=/tmp/lizard-management-client.zip
 
   - name: rm old frontend
     sudo: yes
@@ -22,10 +22,10 @@
   - name: unzip release
     sudo: yes
     sudo_user: "{{ build_user }}"
-    # unarchive: src=/tmp/{{ version}}.zip dest=/var/www/frontend
-    command: unzip /tmp/{{ version }}.zip -d {{ deploy_path }}
+    # unarchive: src=/tmp/.zip dest=/var/www/frontend
+    command: unzip /tmp/lizard-management-client.zip -d {{ deploy_path }}
 
   - name: rm tmp zip
     sudo: yes
     sudo_user: "{{ build_user }}"
-    file: path=/tmp/{{ version}}.zip state=absent
+    file: path=/tmp/lizard-management-client.zip state=absent
